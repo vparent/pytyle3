@@ -13,7 +13,8 @@ from . import store
 class OrientLayout(Layouts):
     # Start implementing abstract methods
     def __init__(self, desk):
-        super(OrientLayout, self).__init__(desk)
+        #super(OrientLayout, self).__init__(desk)
+        super().__init__(desk)
         self.store = store.Store()
         self.proportion = 0.5
 
@@ -71,9 +72,11 @@ class OrientLayout(Layouts):
         assert self.tiling
 
         # move the first master to slave
-        self.store.slaves.insert(0, self.store.masters.pop(0))
+        if len(self.store.masters) > 0:
+            self.store.slaves.insert(0, self.store.masters.pop(0))
         # move the last slave to master
-        self.store.masters.append(self.store.slaves.pop(-1))
+        if len(self.store.slaves) > 0:
+            self.store.masters.append(self.store.slaves.pop(-1))
         self.tile()
 
     def clients(self):

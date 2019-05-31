@@ -26,6 +26,6 @@ exec(compile(open(conffile, "rb").read(), conffile, 'exec'))
 
 assert bindings is not None
 
-for key_string, fun in bindings.iteritems():
+for key_string, fun in bindings.items():
     if not keybind.bind_global_key('KeyPress', key_string, fun):
         print(f'Could not bind {key_string}', file=sys.stderr)

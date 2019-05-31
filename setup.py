@@ -14,19 +14,18 @@ except:
     sys.exit(1)
 
 setup(
-    name = 'pytyle3',
-    author = 'Andrew Gallant',
-    author_email = 'andrew@pytyle.com',
-    version = '3.0.0',
-    license = 'WTFPL',
-    description = 'A new and much more lightweight pytyle that supports Openbox Multihead',
-    long_description = 'See README',
-    url = 'https://github.com/BurntSushi/pytyle3',
-    platforms = 'POSIX',
-    packages = ['pt3', 'pt3/layouts'],
-    data_files = [('share/doc/pytyle3', ['README', 'COPYING', 'INSTALL']),
-                  ('/etc/xdg/pytyle3', 
-                   ['config.py', 'keybind.py'])],
-    scripts = ['pytyle3']
+    name='pytyle3',
+    author='Andrew Gallant',
+    author_email='andrew@pytyle.com',
+    version='3.0.0',
+    license='WTFPL',
+    description='A new and much more lightweight pytyle that supports Openbox Multihead',
+    long_description='See README',
+    url='https://github.com/BurntSushi/pytyle3',
+    platforms='POSIX',
+    packages=['pt3', 'pt3/layouts'],
+    data_files=[('share/doc/pytyle3', ['README', 'COPYING', 'INSTALL']),
+                ('~/.config/pytyle3',
+                 ['config.py', 'keybind.py'])],
+    scripts=['pytyle3']
 )
-

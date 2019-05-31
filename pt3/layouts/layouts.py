@@ -8,7 +8,7 @@ class Layouts(object, metaclass=abc.ABCMeta):
     """Base class for layouts """
 
     @abc.abstractmethod
-    def __init__(self):
+    def __init__(self, desk):
         self.desk = desk  # Should never change
         self.active = False
         self.tiling = False

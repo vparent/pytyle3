@@ -153,7 +153,7 @@ class Client(object):
             tile.update_client_moved(self)
 
     def cb_focus_out(self, e):
-        if e.mode == xcb.xproto.NotifyMode.Grab:
+        if e.mode == xproto.NotifyMode.Grab:
             state.GRAB = self
 
     def cb_configure_notify(self, e):
