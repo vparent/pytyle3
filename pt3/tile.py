@@ -2,17 +2,18 @@ import xpybutil
 import xpybutil.event as event
 import xpybutil.util as util
 
-from debug import debug
+from .debug import debug
 
-import state
-from layouts import layouts
+from . import state
+from .layouts import layouts
 
 try:
-    from config import tile_on_startup
+    from .config import tile_on_startup
 except ImportError:
     tile_on_startup = False
 
 tilers = {}
+
 
 def debug_state():
     debug('-' * 45)
@@ -23,6 +24,7 @@ def debug_state():
         debug(tiler)
         debug(tiler.store)
         debug('-' * 45)
+
 
 def cmd(action):
     def _cmd():
@@ -41,6 +43,7 @@ def cmd(action):
 
     return _cmd
 
+
 def cycle_current_tiler():
     assert state.desktop in tilers
 
@@ -52,10 +55,11 @@ def cycle_current_tiler():
     newtiler.active = True
 
     debug('Switching tiler from %s to %s on desktop %d' % (
-           tiler.__class__.__name__, newtiler.__class__.__name__, 
-           state.desktop))
+        tiler.__class__.__name__, newtiler.__class__.__name__,
+        state.desktop))
 
     newtiler.tile(save=False)
+
 
 def get_active_tiler(desk):
     assert desk in tilers
@@ -64,12 +68,14 @@ def get_active_tiler(desk):
         if tiler.active:
             return tiler, i
 
+
 def update_client_moved(c):
     assert c.desk in tilers
 
     tiler, _ = get_active_tiler(c.desk)
     if tiler.tiling:
         tiler.tile()
+
 
 def update_client_desktop(c, olddesk):
     assert c.desk in tilers
@@ -81,11 +87,13 @@ def update_client_desktop(c, olddesk):
     for tiler in tilers[c.desk]:
         tiler.add(c)
 
+
 def update_client_add(c):
     assert c.desk in tilers
-    
+
     for tiler in tilers[c.desk]:
         tiler.add(c)
+
 
 def update_client_removal(c):
     assert c.desk in tilers
@@ -93,8 +101,9 @@ def update_client_removal(c):
     for tiler in tilers[c.desk]:
         tiler.remove(c)
 
+
 def update_tilers():
-    for d in xrange(state.desk_num):
+    for d in range(state.desk_num):
         if d not in tilers:
             debug('Adding tilers to desktop %d' % d)
             tilers[d] = []
@@ -105,10 +114,11 @@ def update_tilers():
             if tile_on_startup:
                 tilers[d][0].tiling = True
                 tilers[d][0].tile()
-    for d in tilers.keys():
+    for d in list(tilers.keys()):
         if d >= state.desk_num:
             debug('Removing tilers from desktop %d' % d)
             del tilers[d]
+
 
 def cb_property_notify(e):
     aname = util.get_atom_name(e.atom)
@@ -126,5 +136,5 @@ def cb_property_notify(e):
             if tiler.tiling:
                 tiler.tile()
 
-event.connect('PropertyNotify', xpybutil.root, cb_property_notify)
 
+event.connect('PropertyNotify', xpybutil.root, cb_property_notify)

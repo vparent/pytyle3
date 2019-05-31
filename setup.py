@@ -8,9 +8,9 @@ from distutils.core import setup
 try:
     import xpybutil
 except:
-    print ''
-    print 'pytyle3 requires xpybutil'
-    print 'See: https://github.com/BurntSushi/xpybutil'
+    print()
+    print('pytyle3 requires xpybutil')
+    print('See: https://github.com/BurntSushi/xpybutil')
     sys.exit(1)
 
 setup(

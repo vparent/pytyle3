@@ -9,7 +9,8 @@ import xpybutil.util as util
 import xpybutil.window as window
 import xpybutil.xinerama as xinerama
 
-import config
+from . import config
+from . import util
 
 PYTYLE_STATE = 'startup'
 GRAB = None
@@ -30,7 +31,7 @@ while not _wmrunning:
             elif wm.lower() == 'kwin':
                 utilwm = window.WindowManagers.KWin
 
-            print '%s window manager is running...' % wm
+            print(f'{wm} window manager is running...')
             sys.stdout.flush()
 
     if not _wmrunning:
@@ -46,12 +47,14 @@ visibles = ewmh.get_visible_desktops().reply() or [desktop]
 stacking = ewmh.get_client_list_stacking().reply()
 workarea = []
 
+
 def quit():
-    print 'Exiting...'
-    import tile
+    print('Exiting...')
+    from . import tile
     for tiler in tile.tilers:
         tile.get_active_tiler(tiler)[0].untile()
     sys.exit(0)
+
 
 def update_workarea():
     '''
@@ -71,11 +74,12 @@ def update_workarea():
                            mw - (margins['left'] + margins['right']),
                            mh - (margins['top'] + margins['bottom']))
     else:
-        workarea = rect.monitor_rects(monitors)
+        workarea = util.pt3_monitor_rects(monitors)
+
 
 def cb_property_notify(e):
     global activewin, desk_num, desktop, monitors, phys_monitors, root_geom, \
-           stacking, visibles, workarea
+        stacking, visibles, workarea
 
     aname = util.get_atom_name(e.atom)
     if aname == '_NET_DESKTOP_GEOMETRY':
@@ -97,8 +101,8 @@ def cb_property_notify(e):
     elif aname == '_NET_WORKAREA':
         update_workarea()
 
+
 window.listen(xpybutil.root, 'PropertyChange')
 event.connect('PropertyNotify', xpybutil.root, cb_property_notify)
 
 update_workarea()
-

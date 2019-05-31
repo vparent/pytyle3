@@ -5,11 +5,12 @@ from pt3.debug import debug
 import pt3.config as config
 import pt3.client as client
 import pt3.state as state
-from pt3.layouts import Layout
+from .layouts import Layouts
 
-import store
+from . import store
 
-class OrientLayout(Layout):
+
+class OrientLayout(Layouts):
     # Start implementing abstract methods
     def __init__(self, desk):
         super(OrientLayout, self).__init__(desk)
@@ -33,7 +34,7 @@ class OrientLayout(Layout):
     def untile(self):
         debug('Untiling %s' % (self))
         for c in self.store.masters + self.store.slaves:
-			c.restore()
+            c.restore()
 
         self.tiling = False
         xpybutil.conn.flush()
@@ -65,13 +66,15 @@ class OrientLayout(Layout):
         if None not in (awin, prv):
             self.store.switch(awin, prv)
             self.tile()
-            
+
     def rotate(self):
-		assert self.tiling
-		
-		self.store.slaves.insert(0,self.store.masters.pop(0)) # move the first master to slave
-		self.store.masters.append(self.store.slaves.pop(-1)) # move the last slave to master
-		self.tile()
+        assert self.tiling
+
+        # move the first master to slave
+        self.store.slaves.insert(0, self.store.masters.pop(0))
+        # move the last slave to master
+        self.store.masters.append(self.store.slaves.pop(-1))
+        self.tile()
 
     def clients(self):
         return self.store.masters + self.store.slaves
@@ -101,7 +104,7 @@ class OrientLayout(Layout):
     def make_master(self):
         assert self.tiling
 
-        if not self.store.masters: # no masters right now, so don't add any!
+        if not self.store.masters:  # no masters right now, so don't add any!
             return
 
         awin = self._get_focused()
@@ -124,14 +127,14 @@ class OrientLayout(Layout):
 
         self.store.toggle_float(self._get_focused())
         self.tile()
-    
+
     # Begin private methods that should not be called by the user directly
 
     def _get_focused(self):
-        
+
         if type(state.activewin) == list:
             state.activewin = state.activewin[0]
-        
+
         if state.activewin not in client.clients:
             return None
 
@@ -185,6 +188,7 @@ class OrientLayout(Layout):
 
         return prv
 
+
 class VerticalLayout(OrientLayout):
     def tile(self, save=True):
         if not super(VerticalLayout, self).tile(save):
@@ -197,31 +201,34 @@ class VerticalLayout(OrientLayout):
         if not msize and not ssize:
             return
 
-        mx = wx # left limit
-        mw = int(ww * self.proportion) # width of the master
+        mx = wx  # left limit
+        mw = int(ww * self.proportion)  # width of the master
         sx = mx + mw
         sw = ww - mw
-        g = config.gap # Gap between windows
+        g = config.gap  # Gap between windows
 
         if mw <= 0 or mw > ww or sw <= 0 or sw > ww:
             return
-		
-#Masters
+
+# Masters
         if msize:
-            mh = (wh - (msize + 1) * g) / msize # Height of each window
+            mh = (wh - (msize + 1) * g) / msize  # Height of each window
             mw = ww if not ssize else mw
-            for i, c in enumerate(self.store.masters): # i is the number of the window in the list
-                c.moveresize(x=mx + g, y= g + wy + i * (mh + g), w=mw - 2 * g, h=mh)
+            # i is the number of the window in the list
+            for i, c in enumerate(self.store.masters):
+                c.moveresize(x=mx + g, y=g + wy + i *
+                             (mh + g), w=mw - 2 * g, h=mh)
 
 # Slaves
         if ssize:
-            sh = (wh - (ssize + 1) * g)/ ssize # Height of each window
+            sh = (wh - (ssize + 1) * g) / ssize  # Height of each window
             if not msize:
                 sx, sw = wx, ww
             for i, c in enumerate(self.store.slaves):
-                c.moveresize(x=sx, y= g + wy + i * (sh + g), w=sw - g, h=sh)
+                c.moveresize(x=sx, y=g + wy + i * (sh + g), w=sw - g, h=sh)
 
         xpybutil.conn.flush()
+
 
 class HorizontalLayout(OrientLayout):
     def tile(self, save=True):
@@ -239,7 +246,7 @@ class HorizontalLayout(OrientLayout):
         mh = int(wh * self.proportion)
         sy = my + mh
         sh = wh - mh
-        g = config.gap # Gap between windows
+        g = config.gap  # Gap between windows
 
         if mh <= 0 or mh > wh or sh <= 0 or sh > wh:
             return
@@ -247,19 +254,19 @@ class HorizontalLayout(OrientLayout):
 # Masters
         if msize:
             #mw = ww / msize
-            mw = (ww - (msize + 1) * g) / msize # Height of each window
+            mw = (ww - (msize + 1) * g) / msize  # Height of each window
             mh = wh if not ssize else mh
             for i, c in enumerate(self.store.masters):
-                c.moveresize(x=g + wx + i * (g + mw), y=my + g, w=mw, h=mh - 2 * g)
+                c.moveresize(x=g + wx + i * (g + mw),
+                             y=my + g, w=mw, h=mh - 2 * g)
 
-#Slaves
+# Slaves
         if ssize:
             #sw = ww / ssize
-            sw = (ww - (ssize + 1) * g) / ssize # Height of each window
+            sw = (ww - (ssize + 1) * g) / ssize  # Height of each window
             if not msize:
                 sy, sh = wy, wh
             for i, c in enumerate(self.store.slaves):
-                c.moveresize(x= g + wx + i * (g + sw), y=sy, w=sw, h=sh - g)
+                c.moveresize(x=g + wx + i * (g + sw), y=sy, w=sw, h=sh - g)
 
         xpybutil.conn.flush()
-
